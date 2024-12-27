@@ -1,9 +1,10 @@
 // combat.js
 import { store } from './store.js';
 import { waitForMs, performDiceRoll, chance, randomIntFromInterval, rectanglesOverlap } from './utilities.js';
-import { placeExitDoorInCurrentRoom, placeMerchantInCurrentRoom } from './dungeon.js';
+import { placeExitDoorInCurrentRoom, placeMerchantInCurrentRoom, placeRandomTile } from './dungeon.js';
 import { renderVisibleTiles, updateEnvironmentPreview } from './environment.js';
-import { enemyHealthLabel, enemyHealthBar, enemyNameLabel, takePlayerTurn } from './main.js';
+import { enemyHealthLabel, enemyHealthBar, enemyNameLabel } from './dom-elements.js';
+import { takePlayerTurn } from './main.js';
 
 /**
  * Update the combat UI with current stats
@@ -12,6 +13,7 @@ export function updateCombatUI() {
     const playerHealthLabel = document.getElementById('player-health-label');
     const playerHealthBar = document.getElementById('player-health-bar');
     const playerAttackValue = document.getElementById('player-attack-value');
+    const playerDefenseValue = document.getElementById('player-defense-value');
     const playerCredits = document.getElementById('player-credits');
     const playerInventory = document.getElementById('player-inventory');
     const enemyNameLabel = document.getElementById('enemy-name');
@@ -36,6 +38,7 @@ export function updateCombatUI() {
   // Player info
   playerHealthLabel.innerHTML = `Health: ${store.playerCharacter.health}/${store.playerCharacter.startingHealth}`;
   playerAttackValue.innerHTML = store.playerCharacter.attack;
+  playerDefenseValue.innerHTML = store.playerCharacter.defense;
   refreshHealthBar(playerHealthBar, store.playerCharacter.health, store.playerCharacter.startingHealth);
 
   // Enemy info
@@ -85,7 +88,9 @@ export function concludeCombat(combatSection) {
 
   // If all enemies are down, place the door
   if (areAllEnemiesDefeated()) {
-    placeExitDoorInCurrentRoom();
+    // placeExitDoorInCurrentRoom();
+    const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
+    placeRandomTile(activeRoom.map, 2)
     renderVisibleTiles(document.getElementById('dungeon-canvas').getContext('2d'), document.getElementById('dungeon-canvas'));
   }
 }
@@ -132,6 +137,7 @@ export function removeDefeatedEnemies() {
   store.totalDefeatedMonsters++;
   const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
   activeRoom.enemies = activeRoom.enemies.filter(e => !e.monster.defeated);
+  updateCombatUI();
 }
 
 /**
@@ -152,6 +158,8 @@ export function lootEnemy() {
  */
 export function notify(message) {
   const notificationMessageDiv = document.getElementById('notification-message');
+  //create a new p element
+
   notificationMessageDiv.innerHTML = message + '<br>' + notificationMessageDiv.innerHTML;
 }
 
@@ -190,33 +198,62 @@ export function useLootItem(item) {
  * The enemy's turn
  */
 export async function processEnemyTurn() {
-  if (!store.currentBattleMonster || store.currentBattleMonster.health <= 0) {
-    return;
-  }
+    if (!store.currentBattleMonster || store.currentBattleMonster.health <= 0) {
+        return;
+    }
 
-  const enemyDiceElement = document.getElementById('enemy-dice');
-  const enemyDiceRollResult = document.getElementById('enemy-dice-roll-result');
+    const enemyDiceElement = document.getElementById('enemy-dice');
+    const enemyDiceRollResult = document.getElementById('enemy-dice-roll-result');
+console.log('currnet mosnster', store.currentBattleMonster);
+    // Check for special attack
+    if (store.currentBattleMonster.specials) {
+        console.log('specials:', store.currentBattleMonster.specials);
+        for (let special of store.currentBattleMonster.specials) {
+            if (chance(special.chance)) {
+                const specialDamage = special.effect;
+                store.playerCharacter.health -= specialDamage;
+                notify(`${store.currentBattleMonster.name} used ${special.name} and dealt ${specialDamage} damage to you!`, `red`);
+                updateCombatUI();
 
-  // Enemy rolls
-  const enemyRollValue = await performDiceRoll(enemyDiceElement, store.currentBattleMonster.diceType);
-  enemyDiceRollResult.textContent = `${store.currentBattleMonster.name} rolled ${enemyRollValue}`;
+                // Check if player dies
+                if (store.playerCharacter.health <= 0) {
+                    store.playerCharacter.health = 0;
+                    notify("You have been defeated!");
+                    alert(`Game Over! You defeated ${store.totalDefeatedMonsters} monsters and reached level ${store.currentDungeonLevel}!`);
+                    concludeCombat(document.getElementById('combat-section'));
+                }
+                return;
+            }
+        }
+    }
 
-  if (enemyRollValue <= 1) {
-    notify(`${store.currentBattleMonster.name} missed!`);
-    return;
-  }
-  const totalEnemyDamage = store.currentBattleMonster.attack + enemyRollValue;
-  store.playerCharacter.health -= totalEnemyDamage;
-  notify(`${store.currentBattleMonster.name} dealt ${totalEnemyDamage} damage to you!`);
+    // Enemy rolls
+    const enemyRollValue = await performDiceRoll(enemyDiceElement, store.currentBattleMonster.diceType);
+    enemyDiceRollResult.textContent = `${store.currentBattleMonster.name} rolled ${enemyRollValue}`;
 
-  // Update UI
-  updateCombatUI();
+    if (enemyRollValue <= 1) {
+        notify(`${store.currentBattleMonster.name} missed!`);
+        return;
+    }
+    
+    let totalEnemyDamage = (store.currentBattleMonster.attack + enemyRollValue) - store.playerCharacter.defense;
 
-  // Check if player dies
-  if (store.playerCharacter.health <= 0) {
-    store.playerCharacter.health = 0;
-    notify("You have been defeated!");
-    alert(`Game Over! You defeated ${store.totalDefeatedMonsters} monsters and reached level ${store.currentDungeonLevel}!`);
-    concludeCombat(document.getElementById('combat-section'));
-  }
+    if (totalEnemyDamage < 0) {
+        totalEnemyDamage = 0;
+    }
+
+    store.playerCharacter.health -= totalEnemyDamage;
+    //@todo implement colors
+    notify(`${store.currentBattleMonster.name} dealt ${totalEnemyDamage} damage to you!`, `orange`);
+
+    // Update UI
+    updateCombatUI();
+
+    // Check if player dies
+    if (store.playerCharacter.health <= 0) {
+        store.playerCharacter.health = 0;
+        notify("You have been defeated!");
+        alert(`Game Over! You defeated ${store.totalDefeatedMonsters} monsters and reached level ${store.currentDungeonLevel}!`);
+        concludeCombat(document.getElementById('combat-section'));
+    }
 }

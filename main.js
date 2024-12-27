@@ -1,4 +1,16 @@
 // main.js
+import { 
+    playerAttackButton,
+    playerDiceElement,
+    playerDiceRollResult,
+    combatSection,
+    environmentImageElement,
+    dungeonCanvas,
+    drawingContext,
+    modal,
+    btn,
+    span,
+} from './dom-elements.js';
 import { store } from './store.js';
 import { Monster, Player } from './classes.js';
 import { chance, randomBetween, randomId } from './utilities.js';
@@ -18,31 +30,6 @@ import { createMerchant } from './merchant.js';
 
 
 
-// Grab references from DOM
-export const dungeonCanvas = document.getElementById('dungeon-canvas');
-export const drawingContext = dungeonCanvas.getContext('2d');
-export const environmentImageElement = document.getElementById('environment-image');
-export const combatSection = document.getElementById('combat-section');
-export const playerHealthLabel = document.getElementById('player-health-label');
-export const playerHealthBar = document.getElementById('player-health-bar');
-export const playerAttackValue = document.getElementById('player-attack-value');
-export const playerInventory = document.getElementById('player-inventory');
-export const playerCredits = document.getElementById('player-credits');
-export const enemyHealthLabel = document.getElementById('enemy-health-label');
-export const enemyHealthBar = document.getElementById('enemy-health-bar');
-export const enemyNameLabel = document.getElementById('enemy-name');
-export const notificationMessageDiv = document.getElementById('notification-message');
-export const playerAttackButton = document.getElementById('player-attack-button');
-export const playerDiceElement = document.getElementById('player-dice');
-export const enemyDiceElement = document.getElementById('enemy-dice');
-export const playerDiceRollResult = document.getElementById('player-dice-roll-result');
-export const enemyDiceRollResult = document.getElementById('enemy-dice-roll-result');
-// Get the modal, button, and close button elements
-export const modal = document.getElementById("modal");
-export const btn = document.getElementById("modal-btn");
-export const span = document.getElementsByClassName("close")[0];
-export const modalInnerContent = document.getElementById("modal-inner-content");
-
 // When the user clicks the button, open the modal
 btn.onclick = function() {
   modal.style.display = "block";
@@ -61,14 +48,18 @@ window.onclick = function(event) {
 }
 
 // Create the player
-store.playerCharacter = new Player(100, 1);
+store.playerCharacter = new Player(100, 1, 1);
 
 // Movement & Attack hotkey
 document.addEventListener('keydown', (e) => {
   // Press space to Attack
   if (e.key === ' ') {
     playerAttackButton.click();
+  } else if (e.key === 'Escape') {
+    modal.style.display = "none";
   }
+
+  
   // If in combat, ignore movement
   if (store.isInCombat) return;
 
@@ -123,11 +114,12 @@ document.addEventListener('keydown', (e) => {
       }
       // merchant
       else if (tileValue === 6) {
-        // axeBuy.style.display = 'block';
+        modal.style.display = "block";
         // updateCombatUI();
       } else {
-        // axeBuy.style.display = 'none';
+        modal.style.display = "none";
       }
+
 
       updateEnvironmentPreview(environmentImageElement);
       renderVisibleTiles(drawingContext, dungeonCanvas);
@@ -153,7 +145,7 @@ export async function takePlayerTurn(item) {
     if (!item.effect) {        
         // Player dice roll
         playerRollValue = await performPlayerDiceRoll();
-        
+
         if (playerRollValue <= 1) {
             notify("You missed!");
             await waitAndEnemyTurn();
@@ -218,62 +210,93 @@ function handleChestLoot(activeRoom, tileX, tileY) {
     if (chance(50)) {
       itemFound = true;
       const bandage = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: randomId(),
         name: 'Bandage',
         type: 'heal',
-        effect: 30,
+        effect: randomBetween(25, 35),
         image: 'images/items/health.jpg',
         poa: 'active'
       };
       store.playerCharacter.inventory.push(bandage);
-      notify('You found a Bandage!');
+      notify('You found a Bandage that heals for ' + bandage.effect + ' health!');
     }
     // Plasma Dagger
-    if (chance(30) && !store.playerCharacter.inventory.find(item => item.name === 'Plasma Dagger')) {
+    if (chance(15) && !store.playerCharacter.inventory.find(item => item.name === 'Plasma Dagger')) {
       itemFound = true;
       const plasmaDagger = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: randomId(),
         name: 'Plasma Dagger',
         type: 'attack',
-        effect: 5,
+        effect: randomBetween(2, 3),
         image: 'images/weapons/plasma-dagger.jpg',
         poa: 'passive'
       };
       store.playerCharacter.inventory.push(plasmaDagger);
       store.playerCharacter.attack += plasmaDagger.effect;
-      notify('You found a Plasma Dagger!');
-    } else if (chance(30) && !store.playerCharacter.inventory.find(item => item.name === 'Aetherweaver')) {
+      notify('You found a Plasma Dagger that hits for ' + plasmaDagger.effect + ' damage!');
+    } else if (chance(15) && !store.playerCharacter.inventory.find(item => item.name === 'Aetherweaver')) {
       itemFound = true;
       const aetherweaver = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: randomId(),
         name: 'Aetherweaver',
         type: 'attack',
-        effect: 7,
+        effect: randomBetween(2, 4),
         image: 'images/weapons/aetherweaver.jpg',
         poa: 'passive'
       };
       store.playerCharacter.inventory.push(aetherweaver);
       store.playerCharacter.attack += aetherweaver.effect;
-      notify('You found an Aetherweaver!');
+      notify('You found an Aetherweaver that hits for ' + aetherweaver.effect + ' damage!');
+    } else if (chance(15) && !store.playerCharacter.inventory.find(item => item.name === 'dual-pistols')) {
+        itemFound = true;
+        const dualPistols = {
+          id: randomId(),
+          name: 'dual-pistols',
+          type: 'attack',
+          effect: randomBetween(3, 7),
+          image: 'images/weapons/dual-pistols.jpg',
+          poa: 'passive'
+        };
+        store.playerCharacter.inventory.push(dualPistols);
+        store.playerCharacter.attack += dualPistols.effect;
+        notify('You found Dual Pistols that hit for ' + dualPistols.effect + ' damage!');
+    } 
+    
+    if (chance(20)) {
+        itemFound = true;
+        const damageBooster = {
+            id: randomId(),
+            name: 'damage booster',
+            type: 'attack',
+            effect: randomBetween(1, 3),
+            image: 'images/items/damage-booster.jpg',
+            poa: 'passive'
+        };
+        store.playerCharacter.inventory.push(damageBooster);
+        store.playerCharacter.attack += damageBooster.effect;
+
+        notify('You found damage booster that increases your attack by ' + damageBooster.effect + '!');
     }
+
+
     // Grenade
-    if (chance(30)) {
+    if (chance(15)) {
       itemFound = true;
       const grenade = {
         id: randomId(),
         name: 'grenade',
         type: 'attack',
-        effect: 30,
+        effect: randomBetween(25,30),
         image: 'images/weapons/grenade.jpg',
         poa: 'active'
       };
       store.playerCharacter.inventory.push(grenade);
-      notify('You found a grenade!');
+      notify('You found a grenade that hits for ' + grenade.effect + ' damage!');
     }
     // Credits
     if (chance(30)) {
       itemFound = true;
-      const amount = randomBetween(3, 35);
+      const amount = randomBetween(3, 25);
       store.playerCharacter.credits += amount;
       notify(`You found ${amount} credits!`);
     }

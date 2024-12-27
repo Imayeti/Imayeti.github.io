@@ -1,4 +1,5 @@
-// store.js
+import { modal } from './dom-elements.js';
+
 export const store = {
     // Player & monster data
     playerCharacter: null,
@@ -24,9 +25,18 @@ export const store = {
     MAX_DUNGEON_LEVELS: 500,
 
     // Merchant
-    merchant: null
+    merchant: null,
+
+    // Pause state
+    isPaused: false, //this is broken
   };
-  
+
+  //Get modal state by checking if modal is open
+    function getModalState() {
+        console.log('getModalState', modal.style.display === 'block');
+        return modal.style.display === 'block';
+    }
+
   // Simple direction arrow lookup
   export const directionArrows = {
     'up': '↑',

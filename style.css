@@ -19,7 +19,8 @@ body {
 
 /* Environment preview image */
 #environment-image {
-    width: 300px;
+    width: 400px;
+    margin-left: 60px;
     border: 1px solid #333;
     object-fit: cover;
     margin-right: 20px;

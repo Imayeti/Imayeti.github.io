@@ -1,4 +1,4 @@
-import { modalInnerContent } from './main.js';
+import { modalInnerContent } from './dom-elements.js';
 import { Merchant } from './classes.js';
 import { randomId, randomBetween } from './utilities.js';
 import { store } from './store.js';
@@ -12,14 +12,33 @@ export function createMerchant() {
             name: 'axe',
             price: randomBetween(40, 50),
             type: 'attack',
-            effect: randomBetween(2, 5),
+            effect: randomBetween(3, 6),
             image: 'images/weapons/axe.png',
             poa: 'passive'
         },
         {
             id: randomId(),
+            name: 'plasma-pistol',
+            price: randomBetween(12, 30),
+            type: 'attack',
+            effect: randomBetween(2, 4),
+            image: 'images/weapons/plasma-pistol.jpg',
+            poa: 'passive'
+        },
+        //shield
+        {
+            id: randomId(),
+            name: 'shield',
+            price: randomBetween(20, 30),
+            type: 'defense',
+            effect: randomBetween(2,4),
+            image: 'images/items/shield.jpg',
+            poa: 'passive'
+        },
+        {
+            id: randomId(),
             name: 'grenade',
-            price: randomBetween(10, 20),
+            price: randomBetween(4, 12),
             type: 'attack',
             effect: randomBetween(25, 40),
             image: 'images/weapons/grenade.jpg',
@@ -28,7 +47,25 @@ export function createMerchant() {
         {
             id: randomId(),
             name: 'bandage',
-            price: randomBetween(10, 20),
+            price: randomBetween(7, 12),
+            type: 'heal',
+            effect: randomBetween(25, 45),
+            image: 'images/items/health.jpg',
+            poa: 'active'
+        },
+        {
+            id: randomId(),
+            name: 'bandage',
+            price: randomBetween(7, 12),
+            type: 'heal',
+            effect: randomBetween(25, 45),
+            image: 'images/items/health.jpg',
+            poa: 'active'
+        },
+        {
+            id: randomId(),
+            name: 'bandage',
+            price: randomBetween(7, 12),
             type: 'heal',
             effect: randomBetween(25, 45),
             image: 'images/items/health.jpg',
@@ -38,8 +75,15 @@ export function createMerchant() {
 
     store.merchant = merchant;
 
+    renderMerchantItems();
+}
+
+function renderMerchantItems() {
+    //clear the modal
+    modalInnerContent.innerHTML = 'Credits: ' + store.playerCharacter.credits + '<br>';
+
     //render the images to the modal
-    merchant.inventory.forEach(item => {
+    store.merchant.inventory.forEach(item => {
         const mechDiv = document.createElement('div');
         const itemInfo = document.createElement('p');
         const merchantItem = document.createElement('img');
@@ -98,4 +142,31 @@ function handleBuyItem(item) {
         updateCombatUI();
     }
 
+    if (item.name === 'plasma-pistol') {
+        store.playerCharacter.credits -= item.price;
+        store.playerCharacter.inventory.push(item);
+        store.playerCharacter.attack += item.effect;
+        
+        notify(`You bought a plasma-pistol that hits for ${item.effect}!`);
+
+        updateCombatUI();
+    }
+
+    if (item.name === 'shield') {
+        store.playerCharacter.credits -= item.price;
+        store.playerCharacter.inventory.push(item);
+        store.playerCharacter.defense += item.effect;
+        
+        notify(`You bought a shield that defends for ${item.effect}!`);
+
+        updateCombatUI();
+    }
+
+
+
+
+
+     // remove item from merchant inventory
+     store.merchant.inventory = store.merchant.inventory.filter(i => i.id !== item.id);
+     renderMerchantItems();
 }

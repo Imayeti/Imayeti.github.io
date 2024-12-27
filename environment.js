@@ -26,6 +26,14 @@ export function updateEnvironmentPreview(environmentImageElement) {
     tileValueAhead = activeRoom.map[tileAheadY][tileAheadX];
   }
 
+  let playerTile = 1;
+  if (
+    store.playerTileY >= 0 && store.playerTileY < activeRoom.map.length &&
+    store.playerTileX >= 0 && store.playerTileX < activeRoom.map[0].length
+  ) {
+    playerTile = activeRoom.map[store.playerTileY][store.playerTileX];
+  }
+
   // Update the environment image based on the tile type
   if (tileValueAhead === 4) {
     environmentImageElement.src = 'images/rooms/healing-room.png';
@@ -35,7 +43,7 @@ export function updateEnvironmentPreview(environmentImageElement) {
     environmentImageElement.src = 'images/rooms/wall.png';
   } else if (tileValueAhead === 5) {
     environmentImageElement.src = 'images/rooms/chest.png';
-  } else if (tileValueAhead === 6) {
+  } else if (tileValueAhead === 6 || playerTile === 6) {
     environmentImageElement.src = 'images/chars/merchant.png';
   } else {
     environmentImageElement.src = 'images/rooms/hallway-level-one-1.jpg';

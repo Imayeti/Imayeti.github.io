@@ -2,7 +2,7 @@
 import { randomId } from './utilities.js';
 
 export class Monster {
-  constructor(name, health, attack, diceType, imagePath) {
+  constructor(name, health, attack, diceType, imagePath, specials) {
     this.startingHealth = health;
     this.name = name;
     this.health = health;
@@ -10,14 +10,16 @@ export class Monster {
     this.defeated = false;
     this.diceType = diceType;
     this.imagePath = imagePath;
+    this.specials = specials;
   }
 }
 
 export class Player {
-  constructor(health, attack) {
+  constructor(health, attack, defense) {
     this.startingHealth = health;
     this.health = health;
     this.attack = attack;
+    this.defense = defense;
     // Give the player a default Bandage in inventory
     this.inventory = [
       {

@@ -11,9 +11,9 @@ import { createMerchant } from './merchant.js';
  */
 export function generateRandomRoom(
   minWidth = 10,
-  maxWidth = 35,
+  maxWidth = 20,
   minHeight = 10,
-  maxHeight = 35
+  maxHeight = 20
 ) {
   const roomWidth = Math.floor(Math.random() * (maxWidth - minWidth + 1)) + minWidth;
   const roomHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
@@ -47,7 +47,7 @@ export function generateRandomRoom(
   }
 
   // Up to 6 attempts to place chest tiles
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 9; i++) {
     if (Math.random() < 0.25) {
       placeRandomTile(newRoomMap, 5, true);
     }
@@ -62,68 +62,139 @@ export function generateRandomRoom(
 
   // Number of monsters
   //num enemies numMonsters number of eneies number enemies
-  const monsterCount = randomIntFromInterval(3, 8);
+  const monsterCount = randomIntFromInterval(3, 7);
 //   const monsterCount = 40
 
   // Possible monster templates
-  const possibleMonsters = [
+  const startingEnemies = [
     {
       name: "Rust Crawler",
       health: 40 + (store.currentDungeonLevel * 2),
       attack: 1,
       dice: 'd6',
-      img: 'images/enemies/rust-crawler.png'
+      img: 'images/enemies/rust-crawler.png',
+      specials: [
+        {
+            name: "backstab",
+            description: "Uses a rust attack",
+            chance: 15,
+            effect: randomBetween(7,11)
+        }
+      ]
     },
     {
       name: "Glow Leech",
       health: 60 + (store.currentDungeonLevel * 2),
       attack: 2,
       dice: 'd6',
-      img: 'images/enemies/glow-leech.png'
+      img: 'images/enemies/glow-leech.png',
+      specials: [
+            {
+                name: "drain",
+                description: "Uses a drain attack",
+                chance: 15,
+                effect: randomBetween(8,13)
+            }
+        ]
     },
     {
       name: "Fracture Sentinel",
       health: 30 + (store.currentDungeonLevel * 2),
       attack: 3,
       dice: 'd6',
-      img: 'images/enemies/shard-sentinel.jpg'
+      img: 'images/enemies/shard-sentinel.jpg',
+        specials: [
+            {
+                name: "shard",
+                description: "Uses a shard attack",
+                chance: 15,
+                effect: randomBetween(9,14)
+            }
+        ]
     },
     {
       name: "Scrap Vulture",
       health: 55 + (store.currentDungeonLevel * 2),
       attack: 3,
       dice: 'd6',
-      img: 'images/enemies/vulture.jpg'
+      img: 'images/enemies/vulture.jpg',
+        specials: [
+            {
+                name: "scratch",
+                description: "Uses a scratch attack",
+                chance: 15,
+                effect: randomBetween(9,14)
+            }   
+        ]
     },
-    {
-      name: "Chrono Sentinel",
-      health: 70 + (store.currentDungeonLevel * 2),
-      attack: 4,
-      dice: 'd8',
-      img: 'images/enemies/chrono-sentinel.jpg'
-    },
+   
     {
       name: "Viper",
       health: 50 + (store.currentDungeonLevel * 2),
       attack: 4,
       dice: 'd8',
-      img: 'images/enemies/viper.jpg'
+      img: 'images/enemies/viper.jpg',
+        specials: [
+            {
+                name: "poison",
+                description: "Uses a poison attack",
+                chance: 15,
+                effect: randomBetween(10,15)
+            }
+        ]
     },
-    {
-      name: "Mist Reaver",
-      health: 40 + (store.currentDungeonLevel * 2),
-      attack: 5 + store.currentDungeonLevel,
-      dice: 'd12',
-      img: 'images/enemies/mist-reaver.jpg'
-    },
-    {
-      name: "Vanguard Stalker",
-      health: 45 + (store.currentDungeonLevel * 2),
-      attack: 6,
-      dice: 'd8',
-      img: 'images/enemies/vanguard-stalker.jpg'
-    }
   ];
+
+    const levelThreeThroughFiveEnemies = [
+        ...startingEnemies,
+        {
+            name: "Vanguard Stalker",
+            health: 45 + (store.currentDungeonLevel * 2),
+            attack: 6,
+            dice: 'd8',
+            img: 'images/enemies/vanguard-stalker.jpg',
+            specials: [
+                {
+                    name: "shock",
+                    description: "Uses a shock attack",
+                    chance: 25,
+                    effect: randomBetween(10,15)
+                }
+            ]
+        },
+        {
+            name: "Chrono Sentinel",
+            health: 70 + (store.currentDungeonLevel * 2),
+            attack: 4,
+            dice: 'd8',
+            img: 'images/enemies/chrono-sentinel.jpg',
+            specials: [
+                {
+                    name: "time warp",
+                    description: "Uses a time warp attack",
+                    chance: 25,
+                    effect: randomBetween(12,18)
+                }
+            ]
+        },
+        {
+            name: "Mist Reaver",
+            health: 40 + (store.currentDungeonLevel * 2),
+            attack: 5 + store.currentDungeonLevel,
+            dice: 'd12',
+            img: 'images/enemies/mist-reaver.jpg',
+            specials: [
+                {
+                    name: "mist",
+                    description: "Uses a mist attack",
+                    chance: 25,
+                    effect: randomBetween(10,20)
+                }
+            ]
+        },
+    ];
+
+  const enemies = store.currentDungeonLevel <= 3 ? startingEnemies : levelThreeThroughFiveEnemies;
 
   // Track positions of monsters
   let enemyPositions = [];
@@ -132,13 +203,14 @@ export function generateRandomRoom(
   const newRoomIndex = store.dungeonRooms.length;
   for (let i = 0; i < monsterCount; i++) {
     const { x, y } = placeRandomTile(newRoomMap, 3, true);
-    const monsterTemplate = possibleMonsters[Math.floor(Math.random() * possibleMonsters.length)];
+    const monsterTemplate = enemies[Math.floor(Math.random() * enemies.length)];
     const newMonster = new Monster(
       monsterTemplate.name,
       monsterTemplate.health,
       monsterTemplate.attack,
       monsterTemplate.dice,
-      monsterTemplate.img
+      monsterTemplate.img,
+      monsterTemplate.specials 
     );
     store.monsterLookup[`${newRoomIndex}-${x}-${y}`] = newMonster;
     enemyPositions.push({ x, y });
@@ -247,14 +319,22 @@ export function generateAndLoadNextLevelRoom() {
   store.isInCombat = false;
   store.currentBattleMonster = null;
   store.currentFacingDirection = 'up';
-  placeMerchantInCurrentRoom();
+
+  // place merchant
+  if (chance(90)) {
+      createMerchant(); 
+      const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
+      placeRandomTile(activeRoom.map, 6)
+  }
 }
 
 /**
+ * @todo unused
  * Places an exit door in the current room (tile = 2)
  */
 export function placeExitDoorInCurrentRoom() {
   const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
+  
   // Only place if not beyond max level
   if (store.currentDungeonLevel <= store.MAX_DUNGEON_LEVELS) {
     const width = activeRoom.map[0].length;
@@ -266,10 +346,11 @@ export function placeExitDoorInCurrentRoom() {
 }
 
 /**
+ * @todo unused
  * Place a merchant tile in the current room (tile = 6)
  */
 export function placeMerchantInCurrentRoom() {
-  createMerchant(); 
+
 
   const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
 

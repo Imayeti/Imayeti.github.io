@@ -29,7 +29,11 @@ export function discoverSurroundingTiles(px, py) {
     [0, -1],
     [0, 1],
     [-1, 0],
-    [1, 0]
+    [1, 0],
+    [-1, -1],
+    [1, -1],
+    [-1, 1],
+    [1, 1]
   ];
   const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
   for (let [dx, dy] of deltas) {
@@ -48,7 +52,7 @@ export function discoverSurroundingTiles(px, py) {
  * Move all enemies if not in combat
  */
 export function updateAllEnemies() {
-  if (store.isInCombat) return;
+  if (store.isInCombat || store.isPaused) return;
   const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
 
   for (let enemyObj of activeRoom.enemies) {
