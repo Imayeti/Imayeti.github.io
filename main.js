@@ -1,4 +1,3 @@
-// main.js
 import { 
     playerAttackButton,
     playerDiceElement,
@@ -12,7 +11,7 @@ import {
     span,
 } from './dom-elements.js';
 import { store } from './store.js';
-import { Monster, Player } from './classes.js';
+import { Player } from './classes.js';
 import { chance, randomBetween, randomId } from './utilities.js';
 import { canMoveToTile, discoverSurroundingTiles, gameLoop } from './movement.js';
 import { generateAndLoadNextLevelRoom, placeMerchantInCurrentRoom } from './dungeon.js';
@@ -24,12 +23,30 @@ import {
   removeDefeatedEnemies, 
   processEnemyTurn 
 } from './combat.js';
-import { TILE_SIZE, ENEMY_SIZE } from './constants.js';
 import { checkForPlayerEnemyOverlap } from './combat.js';
-import { createMerchant } from './merchant.js';
 
+// Function to simulate keyboard events
+function simulateKeyPress(key) {
+    const event = new KeyboardEvent('keydown', { key });
+    document.dispatchEvent(event);
+}
 
+// Add event listeners to buttons
+const buttons = document.querySelectorAll('.arrow-button');
+buttons.forEach(button => {
+    button.addEventListener('click', () => {
+        const key = button.getAttribute('data-key');
+        simulateKeyPress(key);
+    });
+});
 
+// Example: Listen for simulated arrow key presses
+document.addEventListener('keydown', (event) => {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+    }
+});
+
+//MODAL
 // When the user clicks the button, open the modal
 btn.onclick = function() {
   modal.style.display = "block";

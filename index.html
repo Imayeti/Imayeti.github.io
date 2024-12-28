@@ -1,6 +1,5 @@
 <!-- there is a bug on enemy death where i get stuck and cant move. also the merchant should be buyable by looking at him not 
-by stepping on him 
-or else fix view of him. Give hime random wears that can be bought -->
+by stepping on him or else fix view of him. Give hime random wears that can be bought -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,10 +7,9 @@ or else fix view of him. Give hime random wears that can be bought -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link href="style.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <title>Voidbreaker</title>
-
-  
 </head>
 
 <body>
@@ -24,37 +22,43 @@ or else fix view of him. Give hime random wears that can be bought -->
     </div>
   </div>
 
-  <!-- Environment preview section -->
-  <div id="environment-container">
-    <img 
-      id="environment-image" 
-      src="images/rooms/hallway-level-one-1.jpg" 
-      alt="Dungeon Environment"
-    >
-  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <!-- Environment preview section -->
+      <div id="environment-container" class="">
+        <img 
+          id="environment-image" 
+          src="images/rooms/hallway-level-one-1.jpg" 
+          alt="Dungeon Environment"
+        >
+      </div>
 
-  <div class="container">
-    <!-- Main Game Canvas -->
-    <canvas 
-      id="dungeon-canvas" 
-      width="400" 
-      height="400"
-    ></canvas>
-
+      <!-- Main Game Canvas -->
+      <canvas 
+        id="dungeon-canvas" 
+        width="400" 
+        height="400"
+      ></canvas>
+    </div>
+   
     <!-- Combat Interface -->
     <div id="combat-section">
-      <h2>Combat</h2>
       <div class="stats-container">
         <div>
-          <h3>Player</h3>
-
-          <div style="display: flex;">
+          <div class="flex">
             <img 
               src="images/items/credits.jpg" 
               alt="Player" 
               style="width: 60px;">
 
             <h2 style="margin-left: 10px" id="player-credits"></h2>
+
+            <div class="container">
+              <div class="arrow-button up" data-key="ArrowUp">↑</div>
+              <div class="arrow-button left" data-key="ArrowLeft">←</div>
+              <div class="arrow-button down" data-key="ArrowDown">↓</div>
+              <div class="arrow-button right" data-key="ArrowRight">→</div>
+            </div>
           </div>
 
           <h4>Inventory</h4>
@@ -68,8 +72,11 @@ or else fix view of him. Give hime random wears that can be bought -->
               class="health-fill">
             </div>
           </div>
-          <p>Attack: <span id="player-attack-value"></span></p>
-          <p>Defense: <span id="player-defense-value"></span></p>
+          <div class="flex">
+            <p>Attack: <span id="player-attack-value"></span></p>
+            <p class="ml-5">Defense: <span id="player-defense-value"></span></p>
+          </div>
+        
         </div>
       </div>
 
@@ -84,7 +91,7 @@ or else fix view of him. Give hime random wears that can be bought -->
               class="health-fill">
             </div>
           </div>
-          <p>Attack: <span id="enemy-attack-value"></span></p>
+          <!-- <p>Attack: <span id="enemy-attack-value"></span></p> -->
         </div>
       </div>
 
@@ -114,16 +121,9 @@ or else fix view of him. Give hime random wears that can be bought -->
         <div id="notification-message"></div>
       </div>
     </div>
-
-    <!-- Loot container -->
-    <div>
-      <div 
-        id="player-loot" 
-        class="loot-container flex items-center mt-2">
-        Loot items will be rendered here
-      </div>
-    </div>
   </div>
+</div>
+  
 
   <script type="module" src="main.js"></script>
 </body>

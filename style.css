@@ -13,17 +13,23 @@ body {
 /* Environment preview container */
 #environment-container {
     text-align: left;
-    margin-bottom: 10px;
+    margin: 0 auto;
     display: flex;
+    width: calc(200px + 10vw);
 }
 
 /* Environment preview image */
 #environment-image {
-    width: 400px;
-    margin-left: 60px;
+    width: 70%;
+    max-width: 400px;
+    margin: 0 auto;
     border: 1px solid #333;
     object-fit: cover;
-    margin-right: 20px;
+}
+
+#dungeon-canvas {
+    width: calc(200px + 10vw);
+    height: calc(200px + 10vw);
 }
 
 /* Main game canvas */
@@ -37,12 +43,8 @@ body {
 #combat-section {
     border: 1px solid #333;
     padding: 10px;
-    width: 600px;
     background: #fff;
     display: block;
-    position: absolute;
-    left: 50%;
-    top: 50px;
 }
 
 #combat-section h2 {
@@ -146,3 +148,22 @@ body {
 .store-btn {
     display: none;
 }
+
+ /* Arrows */
+
+.arrow-button {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    font-size: 18px;
+    text-align: center;
+    line-height: 50px;
+    background-color: #ddd;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .up, .down {
+    margin-left: auto;
+    margin-right: auto;
+  }
