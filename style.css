@@ -20,7 +20,7 @@ body {
 
 /* Environment preview image */
 #environment-image {
-    width: 70%;
+    width: 90%;
     max-width: 400px;
     margin: 0 auto;
     border: 1px solid #333;
@@ -28,8 +28,8 @@ body {
 }
 
 #dungeon-canvas {
-    width: calc(200px + 10vw);
-    height: calc(200px + 10vw);
+    width: calc(200px + 16vw);
+    height: calc(200px + 16vw);
 }
 
 /* Main game canvas */
@@ -43,7 +43,7 @@ body {
 #combat-section {
     border: 1px solid #333;
     padding: 10px;
-    background: #fff;
+    background: #f5f5f5;
     display: block;
 }
 

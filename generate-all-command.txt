@@ -1,0 +1,1 @@
+OUTPUT_FILE="combined_$(openssl rand -hex 4).txt"; : > "$OUTPUT_FILE"; for file in *.js *.html *.css(N); do [ -e "$file" ] || continue; echo "# File: $file" >> "$OUTPUT_FILE"; cat "$file" >> "$OUTPUT_FILE"; echo -e "\n" >> "$OUTPUT_FILE"; done; echo "All contents combined into: $OUTPUT_FILE"
