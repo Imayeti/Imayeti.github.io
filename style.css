@@ -85,14 +85,14 @@ body {
 .dice-container {
     display: inline-block;
     position: relative;
-    width: 50px;
-    height: 50px;
+    width: calc(30px + 1vw);
+    height: calc(30px + 1vw);
     margin: 5px;
 }
 
 .dice-container img {
-    width: 50px;
-    height: 50px;
+    width: calc(30px + 1vw);
+    height: calc(30px + 1vw);
 }
 
 /* Dice spin animation */
@@ -166,4 +166,11 @@ body {
   .up, .down {
     margin-left: auto;
     margin-right: auto;
+  }
+
+  .btn {
+    background-color: #e6e6e6;
+    padding: 5px 10px;
+    margin-left: 8px;
+    border-radius: 5px;
   }
