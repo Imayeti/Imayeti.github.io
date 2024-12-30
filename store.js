@@ -29,6 +29,8 @@ export const store = {
 
     // Pause state
     isPaused: false, //this is broken
+
+    skillPoints: 1,
   };
 
   //Get modal state by checking if modal is open

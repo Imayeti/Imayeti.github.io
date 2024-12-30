@@ -39,6 +39,8 @@ export function updateEnvironmentPreview(environmentImageElement) {
     environmentImageElement.src = 'images/rooms/healing-room.png';
   } else if (tileValueAhead === 2) {
     environmentImageElement.src = 'images/rooms/level-one-door.png';
+  } else if (tileValueAhead === 7 || tileValueAhead === 8) {
+    environmentImageElement.src = 'images/rooms/door-to-final-boss.png';
   } else if (tileValueAhead === 1) {
     environmentImageElement.src = 'images/rooms/wall.png';
   } else if (tileValueAhead === 5) {
@@ -82,6 +84,8 @@ export function renderVisibleTiles(drawingContext, dungeonCanvas) {
           drawingContext.fillStyle = "#f2d675"; // chest
         } else if (tileValue === 6) {
           drawingContext.fillStyle = "#b8e6bf"; // merchant
+        } else if (tileValue === 7 || tileValue === 8) {
+          drawingContext.fillStyle = "#00c"; // door to boss man
         } else {
           drawingContext.fillStyle = "#fff"; // floor
         }

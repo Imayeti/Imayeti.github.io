@@ -108,7 +108,7 @@ function handleBuyItem(item) {
     console.log('store.playerCharacter.credits:', store.playerCharacter.credits);
     console.log('!store.playerCharacter.credits >= item.price:', !store.playerCharacter.credits >= item.price);
     
-    if (store.playerCharacter.credits <= item.price) {
+    if (store.playerCharacter.credits < item.price) {
         notify(`Not enough credits to buy a ${item.name}`);
         return;
     }

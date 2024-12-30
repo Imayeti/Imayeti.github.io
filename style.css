@@ -180,3 +180,77 @@ body {
 
 
 
+  /* # File: style.css */
+
+/* Skill Tree Modal Overrides */
+.skill-tree-content {
+    position: relative;
+    background-color: #2f2f2f;
+    /* keep your existing styling from .modal-content as desired */
+  }
+  
+  /* Container for all skill nodes */
+  #skill-tree-container {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    margin: 0 auto;
+    border: 1px solid #666;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.2);
+  }
+  
+  /* A single skill node */
+  .skill-node {
+    position: absolute;
+    white-space: nowrap;
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    border: 2px solid #aaa;
+    border-radius: 50%;
+    background-color: #555;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s;
+  }
+  
+  .skill-node:hover {
+    transform: scale(1.1);
+  }
+  
+  /* The “center” node of the skill tree */
+  .skill-node.center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #444;
+  }
+  
+  /* Just some example node positions for 3 prongs with 3 nodes each */
+  .skill-node.p1-1 { top: 30%; left: 50%; }
+  .skill-node.p1-2 { top: 15%; left: 50%; }
+  .skill-node.p1-3 { top: 5%;  left: 50%;  }
+  
+  .skill-node.p2-1 { top: 50%; left: 70%; }
+  .skill-node.p2-2 { top: 50%; left: 85%; }
+  .skill-node.p2-3 { top: 50%; left: 95%; }
+  
+  .skill-node.p3-1 { top: 70%; left: 50%; }
+  .skill-node.p3-2 { top: 85%; left: 50%; }
+  .skill-node.p3-3 { top: 95%; left: 50%; }
+  
+  /* If a node is locked/unavailable */
+  .skill-node.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  /* If a node is already chosen */
+  .skill-node.chosen {
+    background-color: green;
+    border-color: lime;
+  }
+

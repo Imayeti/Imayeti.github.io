@@ -13,7 +13,8 @@ export function generateRandomRoom(
   minWidth = 10,
   maxWidth = 20,
   minHeight = 10,
-  maxHeight = 20
+  maxHeight = 20,
+  isBoss = false
 ) {
   const roomWidth = Math.floor(Math.random() * (maxWidth - minWidth + 1)) + minWidth;
   const roomHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
@@ -62,8 +63,7 @@ export function generateRandomRoom(
 
   // Number of monsters
   //num enemies numMonsters number of eneies number enemies
-  const monsterCount = randomIntFromInterval(3, 7);
-//   const monsterCount = 40
+  let monsterCount = randomIntFromInterval(3, 7);
 
   // Possible monster templates
   const startingEnemies = [
@@ -194,13 +194,59 @@ export function generateRandomRoom(
         },
     ];
 
-  const enemies = store.currentDungeonLevel <= 3 ? startingEnemies : levelThreeThroughFiveEnemies;
+  let enemies = store.currentDungeonLevel <= 3 ? startingEnemies : levelThreeThroughFiveEnemies;
+
+  if (isBoss) {
+    console.log('boss level')
+
+    if (store.currentDungeonLevel > 4) {
+      enemies = [
+        {
+          name: "Ancient Golem",
+          health: 250 + (store.currentDungeonLevel * 2),
+          attack: 20 + store.currentDungeonLevel,
+          dice: 'd20',
+          img: 'images/enemies/ancient-golem.jpg',
+          specials: [
+            {
+              name: "fire stone punch",
+              description: "fire stone punch attack",
+              chance: 25,
+              effect: randomBetween(30, 50)
+            }
+          ]
+        }
+      ];
+    } else {
+      enemies = [
+        {
+          name: "Molten Giant",
+          health: 100 + (store.currentDungeonLevel * 2),
+          attack: 10 + store.currentDungeonLevel,
+          dice: 'd20',
+          img: 'images/enemies/molten-giant.jpg',
+          specials: [
+            {
+              name: "molten slash",
+              description: "molten slash attack",
+              chance: 25,
+              effect: randomBetween(20, 27)
+            }
+          ]
+        }
+      ];
+    }
+
+
+    monsterCount = 1;
+  }
 
   // Track positions of monsters
   let enemyPositions = [];
 
   // Place monster tiles
   const newRoomIndex = store.dungeonRooms.length;
+
   for (let i = 0; i < monsterCount; i++) {
     const { x, y } = placeRandomTile(newRoomMap, 3, true);
     const monsterTemplate = enemies[Math.floor(Math.random() * enemies.length)];
@@ -258,7 +304,8 @@ export function placeRandomTile(roomMap, tileType, mustBeEmpty = false) {
 /**
  * Generate a new room for the next level, load it into store, and position the player
  */
-export function generateAndLoadNextLevelRoom() {
+export function generateAndLoadNextLevelRoom(isBoss = false) {
+    console.log('isboss', isBoss)
   const {
     map,
     discovered,
@@ -267,7 +314,13 @@ export function generateAndLoadNextLevelRoom() {
     width,
     height,
     enemyPositions
-  } = generateRandomRoom();
+  } = generateRandomRoom(
+     10,
+      20,
+      10,
+      20,
+      isBoss
+  );
 
   // Prepare enemies
   let enemiesInThisRoom = [];
@@ -333,16 +386,22 @@ export function generateAndLoadNextLevelRoom() {
  * Places an exit door in the current room (tile = 2)
  */
 export function placeExitDoorInCurrentRoom() {
-  const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
+  // const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
   
   // Only place if not beyond max level
-  if (store.currentDungeonLevel <= store.MAX_DUNGEON_LEVELS) {
-    const width = activeRoom.map[0].length;
-    const height = activeRoom.map.length;
-    const randomX = Math.floor(Math.random() * (width - 2)) + 1;
-    const doorY = height - 1;
-    activeRoom.map[doorY][randomX] = 2;
-  }
+  // if (store.currentDungeonLevel <= store.MAX_DUNGEON_LEVELS) {
+  //   const width = activeRoom.map[0].length;
+  //   const height = activeRoom.map.length;
+  //   const randomX = Math.floor(Math.random() * (width - 2)) + 1;
+  //   const doorY = height - 1;
+  //   if (store.currentDungeonLevel === 2) {
+  //       activeRoom.map[doorY][randomX] = 7;
+  //   } else if (store.currentDungeonLevel === 5) {
+  //     activeRoom.map[doorY][randomX] = 8;
+  //   } else {
+  //       activeRoom.map[doorY][randomX] = 2;
+  //   }
+  // }
 }
 
 /**
@@ -352,13 +411,13 @@ export function placeExitDoorInCurrentRoom() {
 export function placeMerchantInCurrentRoom() {
 
 
-  const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
+  // const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
 
-  if (store.currentDungeonLevel <= store.MAX_DUNGEON_LEVELS) {
-    const width = activeRoom.map[0].length;
-    const height = activeRoom.map.length;
-    const randomX = Math.floor(Math.random() * (width - 2)) + 1;
-    const doorY = height - 1;
-    activeRoom.map[doorY][randomX] = 6;
-  }
+  // if (store.currentDungeonLevel <= store.MAX_DUNGEON_LEVELS) {
+  //   const width = activeRoom.map[0].length;
+  //   const height = activeRoom.map.length;
+  //   const randomX = Math.floor(Math.random() * (width - 2)) + 1;
+  //   const doorY = height - 1;
+  //   activeRoom.map[doorY][randomX] = 6;
+  // }
 }

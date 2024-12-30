@@ -24,7 +24,10 @@ import {
   processEnemyTurn 
 } from './combat.js';
 import { checkForPlayerEnemyOverlap } from './combat.js';
+// # File: main.js
+import { openSkillTree, closeSkillTree, renderSkillTree } from './skill-tree.js';
 
+// ...rest of your code...
 // Function to simulate keyboard events
 function simulateKeyPress(key) {
     const event = new KeyboardEvent('keydown', { key });
@@ -119,23 +122,37 @@ document.addEventListener('keydown', (e) => {
         handleChestLoot(activeRoom, nextTileX, nextTileY);
       }
       // door
-      else if (tileValue === 2) {
+     // main.js
+    else if (tileValue === 2 || tileValue === 7 || tileValue === 8) {
         if (store.currentDungeonLevel < store.MAX_DUNGEON_LEVELS) {
-          store.currentDungeonLevel++;
-          notify(`You proceed to level ${store.currentDungeonLevel}!`);
-          generateAndLoadNextLevelRoom();
-          return;
+            store.currentDungeonLevel++;
+            //  gain a skill point on level up
+            store.skillPoints = (store.skillPoints || 0) + 1;
+        
+            notify(`You proceed to level ${store.currentDungeonLevel}! Skill Points: ${store.skillPoints}`);
+            generateAndLoadNextLevelRoom();
+            return;
         } else {
-          notify("You have completed all levels! You Win!");
+            notify("You have completed all levels! You Win!");
         }
-      }
-      // merchant
-      else if (tileValue === 6) {
+    }
+    //boss @todo this should happen after killing boss not before
+    // else if (tileValue === 7 || tileValue === 8) {
+    //     store.currentDungeonLevel++;
+    //     //  gain a skill point on level up
+    //     store.skillPoints = (store.skillPoints || 0) + 2;
+    
+    //     notify(`You proceed to level ${store.currentDungeonLevel}! Skill Points: ${store.skillPoints}`);
+    //     generateAndLoadNextLevelRoom(true);
+    //     return;
+    // }
+    // merchant
+    else if (tileValue === 6) {
         modal.style.display = "block";
         // updateCombatUI();
-      } else {
+    } else {
         modal.style.display = "none";
-      }
+    }
 
 
       updateEnvironmentPreview(environmentImageElement);

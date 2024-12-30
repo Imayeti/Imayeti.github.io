@@ -90,7 +90,13 @@ export function concludeCombat(combatSection) {
   if (areAllEnemiesDefeated()) {
     // placeExitDoorInCurrentRoom();
     const activeRoom = store.dungeonRooms[store.currentDungeonRoomIndex];
-    placeRandomTile(activeRoom.map, 2)
+    if (store.currentDungeonLevel === 3) {
+        placeRandomTile(activeRoom.map, 7) // boss man
+    } if (store.currentDungeonLevel === 6) {
+        placeRandomTile(activeRoom.map, 8) // boss man 2
+    } else {
+        placeRandomTile(activeRoom.map, 2)
+    }
     renderVisibleTiles(document.getElementById('dungeon-canvas').getContext('2d'), document.getElementById('dungeon-canvas'));
   }
 }
@@ -144,6 +150,23 @@ export function removeDefeatedEnemies() {
  * Simulate looting an enemy
  */
 export function lootEnemy() {
+
+  if (store.currentBattleMonster.name === 'Molten Giant') {
+    const amount = randomIntFromInterval(20, 35) + store.currentDungeonLevel;
+    store.playerCharacter.credits += amount;
+    store.skillPoints += 2;
+    notify(`You found ${amount} credits and 2 skill points!`);
+    return
+  }
+
+  if (store.currentBattleMonster.name === 'Ancient Golem' ) {
+    const amount = randomIntFromInterval(30, 50) + store.currentDungeonLevel;
+    store.playerCharacter.credits += amount;
+    store.skillPoints += 3;
+    notify(`You found ${amount} credits and 3 skill points!`);
+    return
+  }
+
   if (chance(70)) {
     const amount = randomIntFromInterval(1, 10);
     store.playerCharacter.credits += amount;
@@ -151,6 +174,9 @@ export function lootEnemy() {
   } else {
     notify('Nothing found.');
   }
+
+
+
 }
 
 /**
@@ -235,7 +261,7 @@ console.log('currnet mosnster', store.currentBattleMonster);
         notify(`${store.currentBattleMonster.name} missed!`);
         return;
     }
-    
+
     let totalEnemyDamage = (store.currentBattleMonster.attack + enemyRollValue) - store.playerCharacter.defense;
 
     if (totalEnemyDamage < 0) {
@@ -256,4 +282,4 @@ console.log('currnet mosnster', store.currentBattleMonster);
         alert(`Game Over! You defeated ${store.totalDefeatedMonsters} monsters and reached level ${store.currentDungeonLevel}!`);
         concludeCombat(document.getElementById('combat-section'));
     }
-}
+} 
