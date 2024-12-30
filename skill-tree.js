@@ -7,6 +7,11 @@ const skillTreeModal = document.getElementById('skill-tree-modal');
 const skillTreeCloseBtn = document.querySelector('.close-skill-tree');
 const skillPointsDisplay = document.getElementById('skill-points-display');
 const skillTreeContainer = document.getElementById('skill-tree-container');
+const openSkills = document.getElementById('open-skills');
+
+openSkills.onclick = () => {
+  openSkillTree();
+}
 
 /**
  * Our skill tree data.
